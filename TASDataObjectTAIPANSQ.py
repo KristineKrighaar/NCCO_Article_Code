@@ -119,43 +119,6 @@ class Dataset:
 
 ############################ Functions operating with the objects ##################
 
-def extract_data_from_file(filepath):
-    with open(filepath, 'r') as file:
-        lines = file.readlines()
-
-    # Extract TT from the header
-    tt = None
-    for line in lines:
-        if "PARAM: TT=" in line:
-            tt = float(line.split("TT=")[-1].split(",")[0].strip())
-        elif line.startswith("DATA_:"):
-            # Stop parsing the header when reaching the data section
-            break
-
-    # Find the start of the data section (after DATA_:)
-    data_start = next(i for i, line in enumerate(lines) if line.startswith("DATA_:")) + 1
-
-    # Use numpy genfromtxt to load data while ignoring the header and first column (PNT)
-    data = np.genfromtxt(filepath, skip_header=data_start, invalid_raise=False)
-
-    # Ensure the data rows that contain header information are filtered out
-    # Only take rows where valid numerical data exists
-    data = data[~np.isnan(data).any(axis=1)]
-
-    # Extract relevant columns from the data
-    qh = data[:, 1]    # QH is in the 2nd column
-    qk = data[:, 2]    # QK is in the 3rd column
-    mn = data[:, 5]    # MN is in the 6th column (formerly M1)
-    cnt = data[:, 8]   # CNT is in the 9th column
-    cnt_err = np.sqrt(cnt)  # Assuming Poisson error for counts (CNT_err = sqrt(CNT))
-    en = np.mean(data[:, 4])    # EN is in the 5th column
-
-    # Create Dataset object
-    dataset = Dataset(qh, qk, cnt, cnt_err, mn, en, tt)
-
-    return dataset
-
-
 
 def combine_datasets(dataset1, dataset2, qh_tolerance=1e-3, qk_tolerance=1e-3):
     # Create lists to hold the combined data
