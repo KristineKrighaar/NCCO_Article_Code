@@ -41,7 +41,7 @@ The repository includes generated figures in multiple formats, organized by inst
 ## How to Use
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/KristineKrighaar/NCCO_Article_Code
    ```
 2. Create the Anaconda environment:
    ```bash
