@@ -1,7 +1,6 @@
 # Author: Kristine M. L. Krighaar
 # Niels Bohr Institute, University of Copenhagen
 #
-# 
 
 import numpy as np
 import pandas as pd
@@ -67,7 +66,7 @@ class Dataset:
         self.Chi = 10**(3)*np.pi/2*(1-np.exp(-self.EN/(0.08617*self.TT)))*(13.77*self.I)/(self.fq**2*1*self.res_vol)
         self.Chi_err = 10**(3)*np.pi/2*(1-np.exp(-self.EN/(0.08617*self.TT)))*(13.77*self.I_err)/(self.fq**2*1*self.res_vol)
 
-    def p3_scan_amplitude_chi(self):
+    def p3_scan_amplitude_SQ(self):
         """
         Extracts the signal amplitude from a 3-point inelastic neutron scattering measurement.
 
@@ -81,13 +80,13 @@ class Dataset:
         """
 
         # Calculate the background as the average of the off-peak points (I(E1) and I(E3))
-        I_bg = (self.Chi[0] + self.Chi[2]) / 2
+        I_bg = (self.SQ[0] + self.SQ[2]) / 2
 
         # Extract the signal amplitude by subtracting the background from the central point (I(E2))
-        self.amp = self.Chi[1] - I_bg
+        self.amp = self.SQ[1] - I_bg
 
         # Calculate the error in the signal amplitude
-        self.amp_err = np.sqrt(self.Chi_err[1]**2 + ((self.Chi_err[0]**2 + self.Chi_err[2]**2) / 4))
+        self.amp_err = np.sqrt(self.SQ_err[1]**2 + ((self.SQ_err[0]**2 + self.SQ_err[2]**2) / 4))
 
     def FindBestFit(self, model1, model2, initial_guess1, initial_guess2, fixed_params1=None, limits1=None, fixed_params2=None, limits2=None):
         
@@ -118,43 +117,6 @@ class Dataset:
 
 
 ############################ Functions operating with the objects ##################
-
-def extract_data_from_file(filepath):
-    with open(filepath, 'r') as file:
-        lines = file.readlines()
-
-    # Extract TT from the header
-    tt = None
-    for line in lines:
-        if "PARAM: TT=" in line:
-            tt = float(line.split("TT=")[-1].split(",")[0].strip())
-        elif line.startswith("DATA_:"):
-            # Stop parsing the header when reaching the data section
-            break
-
-    # Find the start of the data section (after DATA_:)
-    data_start = next(i for i, line in enumerate(lines) if line.startswith("DATA_:")) + 1
-
-    # Use numpy genfromtxt to load data while ignoring the header and first column (PNT)
-    data = np.genfromtxt(filepath, skip_header=data_start, invalid_raise=False)
-
-    # Ensure the data rows that contain header information are filtered out
-    # Only take rows where valid numerical data exists
-    data = data[~np.isnan(data).any(axis=1)]
-
-    # Extract relevant columns from the data
-    qh = data[:, 1]    # QH is in the 2nd column
-    qk = data[:, 2]    # QK is in the 3rd column
-    mn = data[:, 5]    # MN is in the 6th column (formerly M1)
-    cnt = data[:, 8]   # CNT is in the 9th column
-    cnt_err = np.sqrt(cnt)  # Assuming Poisson error for counts (CNT_err = sqrt(CNT))
-    en = np.mean(data[:, 4])    # EN is in the 5th column
-
-    # Create Dataset object
-    dataset = Dataset(qh, qk, cnt, cnt_err, mn, en, tt)
-
-    return dataset
-
 
 
 def combine_datasets(dataset1, dataset2, qh_tolerance=1e-3, qk_tolerance=1e-3):
@@ -244,7 +206,7 @@ def combine_datasets(dataset1, dataset2, qh_tolerance=1e-3, qk_tolerance=1e-3):
 
 
 
-def plot_fits(data_objects, sample='sample_name'):
+def plot_fits(data_objects, sample='sample_name', temperature = 'Nan'):
     """
     Plots a grid of subplots showing the data points with error bars and the fitted curve.
     
@@ -293,7 +255,8 @@ def plot_fits(data_objects, sample='sample_name'):
         # Add title and labels
         ax.set_title(f"{data_obj.EN:.1f} meV, {data_obj.TT:.1f} K: {data_obj.fit_type.capitalize()} Fit")
         ax.set_xlabel("$(h,1-h,0)$ [r.l.u.]")
-        ax.set_ylabel('$\chi\'\'(Q, \omega)$')
+        ax.set_ylabel('$S(Q, \omega)$')
+        #ax.grid(linestyle='dotted')
         ax.legend(fontsize=8)
 
     # Remove any unused subplots if there are extra grid spaces
@@ -301,7 +264,8 @@ def plot_fits(data_objects, sample='sample_name'):
         fig.delaxes(axes[j])
 
     plt.tight_layout()
-    plt.savefig(f'Raw_fits_{sample}.png', format='png',bbox_inches='tight')
+    plt.savefig(f'Figures_eps/TAIPAN/Raw_fits_{sample}_{temperature}_CHI.eps', format='eps',bbox_inches='tight')
+    plt.savefig(f'Figures_png/TAIPAN/Raw_fits_{sample}_{temperature}_CHI.png', format='png',bbox_inches='tight')
     plt.show()
 
 
@@ -559,7 +523,7 @@ def PointAmpToArea(data_objects, avg_all_sigma, avg_all_sigma_err):
         Amp_err = obj.amp_err
 
         A_p3 = Amp * np.sqrt(2 * np.pi) * avg_all_sigma 
-        A_p3_err = np.sqrt(2*np.pi*avg_all_sigma**2*Amp_err**2 + Amp**2*2*np.pi*avg_all_sigma_err**2)
+        A_p3_err = np.sqrt(2 * np.pi * avg_all_sigma**2 * Amp_err**2 + Amp**2 * 2 * np.pi * avg_all_sigma_err**2)
         
         Areas_p3.append(A_p3)
         Area_errs_p3.append(A_p3_err)
