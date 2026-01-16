@@ -37,11 +37,13 @@ Each subfolder contains the corresponding plots used for visualizing data trends
 Analysis code is provided primarily as **Jupyter Notebooks** and supporting Python modules:
 
 - **Jupyter Notebooks**
-  - `DataAnalysis_IN20.ipynb` – Analysis workflow for IN20 instrument data.  
-  - `DataAnalysis_TAIPAN.ipynb` – Analysis workflow for TAIPAN data.  
+  - `DataAnalysis_IN20.ipynb` – Analysis workflow for IN20 instrument data in $S(Q,\omega)$.  
+  - `DataAnalysis_TAIPAN.ipynb` – Analysis workflow for TAIPAN data in $S(Q,\omega)$. 
+  - `DataAnalysis_IN20CHI.ipynb` – Analysis workflow for IN20 instrument data in $\chi''(\omega)$.  
+  - `DataAnalysis_TAIPANCHI.ipynb` – Analysis workflow for TAIPAN data in $\chi''(\omega)$.  
   - `SQUID_analysis.ipynb` – Analysis workflow for SQUID magnetometer data.  
 - **Python Modules**
-  - `TASDataObjectIN20.py`  
+  - `TASDataObjectIN20_CHI.py`  
   - `TASDataObjectIN20SQ.py`  
   - `TASDataObjectTAIPANSQ.py`  
   - `TASDataObjectTAIPAN_CHI.py`  
