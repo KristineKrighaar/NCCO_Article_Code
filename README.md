@@ -1,7 +1,7 @@
 # Data Analysis for - Investigation of the effect of reductive annealing on spin fluctuations in superconducting electron-doped Nd(1.85)Ce(0.15)CuO(4-\delta)
 
 ## Overview
-This repository contains the scripts, raw data, and figures used for the data analysis presented in a scientific article. The datasets are derived from experiments conducted using the IN20 instrument at the Institut Laue-Langevin (ILL), the TAIPAN instrument at ANSTO, and the SQUID magnetometer measurements from Utrecht University.
+This repository contains the scripts, raw data, and figures used for the data analysis presented in the scientific paper (arXiv:2509.1318). The datasets are derived from experiments conducted using the IN20 instrument at the Institut Laue-Langevin (ILL), the TAIPAN instrument at ANSTO, and the SQUID magnetometer measurements from Utrecht University.
 
 ---
 
